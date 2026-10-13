@@ -1,10 +1,9 @@
 /**
- * GERE SZABADSÁGON - 5 Scene Animation & Particle Engine
+ * GERE SZABADSÁGON - 4 Scene Animation & Particle Engine
  * 1. DayZ Survival (aiming mouse, tapping keys, fog, tea steam)
  * 2. Coding (both hands typing, live VS Code typing, rain on window)
  * 3. Riverside Forest Walk (flowing water ripples, falling leaves, walking stride)
- * 4. Panel Kitchen (stirring spoon, simmering soup bubbles, radiator cat)
- * 5. Sleeping (breathing blanket, floating Zzz, moonbeam dust, twinkling stars)
+ * 4. Panel Kitchen (stirring spoon, simmering soup bubbles, radiator warmth)
  */
 
 class SceneAnimationEngine {
@@ -45,19 +44,14 @@ class SceneAnimationEngine {
 
       // Scene 4: Panel Kitchen
       bubbles: [],
-      kitchenSteam: [],
-
-      // Scene 5: Sleeping
-      sleepZzz: [],
-      lastSleepZzzTime: 0,
-      stars: []
+      kitchenSteam: []
     };
 
     this.init();
   }
 
   init() {
-    const sceneIds = ["gaming", "coding", "walking", "cooking", "sleeping"];
+    const sceneIds = ["gaming", "coding", "walking", "cooking"];
     sceneIds.forEach(id => {
       const c = document.getElementById(`canvas-${id}`);
       if (c) {
@@ -124,17 +118,6 @@ class SceneAnimationEngine {
         alpha: Math.random() * 0.6 + 0.2
       });
     }
-
-    // Twinkling stars in sleeping scene skyline window (normalized 0..1)
-    this.state.stars = [];
-    for (let i = 0; i < 30; i++) {
-      this.state.stars.push({
-        nx: 0.35 + Math.random() * 0.38,
-        ny: 0.10 + Math.random() * 0.45,
-        size: Math.random() * 2 + 1,
-        phase: Math.random() * Math.PI * 2
-      });
-    }
   }
 
   setActiveScene(sceneId) {
@@ -180,8 +163,6 @@ class SceneAnimationEngine {
       this.renderForestWalk(ctx, w, h, now);
     } else if (id === "cooking") {
       this.renderPanelKitchen(ctx, w, h, now);
-    } else if (id === "sleeping") {
-      this.renderSleeping(ctx, w, h, now);
     }
   }
 
@@ -500,87 +481,6 @@ class SceneAnimationEngine {
       ctx.fillRect(w * 0.596, h * 0.278, 7, 2.5);
       ctx.fillRect(w * 0.638, h * 0.278, 7, 2.5);
     }
-    ctx.restore();
-  }
-
-  // ==========================================================
-  // 5. PEACEFUL SLEEPING ANIMATION
-  // ==========================================================
-  renderSleeping(ctx, w, h, now) {
-    const s = this.state;
-    ctx.save();
-
-    // 5A. Twinkling Stars & Skyline Window Lights (Window: x: 0.35w .. 0.72w, y: 0.10h .. 0.55h)
-    this.state.stars.forEach(st => {
-      const twinkle = (Math.sin(now * 0.003 + st.phase) + 1) * 0.4 + 0.2;
-      ctx.fillStyle = `rgba(255, 255, 255, ${twinkle})`;
-      ctx.fillRect(st.nx * w, st.ny * h, st.size, st.size);
-    });
-
-    // 5B. Floating "Zzz" Letters from Pillow on Bed (Left side: x: 0.11w, y: 0.68h)
-    const headX = w * 0.11;
-    const headY = h * 0.68;
-
-    if (now - s.lastSleepZzzTime > 2000) {
-      s.lastSleepZzzTime = now;
-      s.sleepZzz.push({
-        x: headX + (Math.random() - 0.5) * 8,
-        y: headY - 6,
-        size: Math.random() > 0.5 ? 12 : 9,
-        text: Math.random() > 0.5 ? "Z" : "z",
-        alpha: 0.85
-      });
-    }
-
-    ctx.font = "bold 12px monospace";
-    for (let i = s.sleepZzz.length - 1; i >= 0; i--) {
-      const z = s.sleepZzz[i];
-      z.y -= 0.5;
-      z.x -= Math.sin(z.y * 0.06) * 0.35;
-      z.alpha -= 0.004;
-      ctx.fillStyle = `rgba(180, 210, 255, ${Math.max(0, z.alpha)})`;
-      ctx.fillText(z.text, z.x, z.y);
-      if (z.alpha <= 0) s.sleepZzz.splice(i, 1);
-    }
-
-    // 5C. Blanket Gentle Breathing Rise & Fall on Bed (Duvet: x: 0.20w, y: 0.75h)
-    const breath = Math.sin(now * 0.002) * 2.5;
-    ctx.fillStyle = "rgba(180, 30, 45, 0.18)";
-    ctx.beginPath();
-    ctx.ellipse(w * 0.20, h * 0.75 + breath, 52, 14, -0.05, 0, Math.PI * 2);
-    ctx.fill();
-
-    // 5D. Vintage Amp Warm Tube Glow (Center: x: 0.44w, y: 0.66h)
-    const ampGlow = (Math.sin(now * 0.004) + 1) * 0.15 + 0.45;
-    ctx.fillStyle = `rgba(255, 175, 55, ${ampGlow * 0.35})`;
-    ctx.beginPath();
-    ctx.arc(w * 0.44, h * 0.66, 12, 0, Math.PI * 2);
-    ctx.fill();
-
-    // 5E. Fairy Lights Garland Twinkling (Right shelf/wall: x: 0.78w .. 0.94w)
-    const garlandDots = [
-      { x: 0.78, y: 0.23, color: "rgba(255, 230, 150," },
-      { x: 0.82, y: 0.28, color: "rgba(120, 220, 255," },
-      { x: 0.86, y: 0.31, color: "rgba(255, 160, 200," },
-      { x: 0.90, y: 0.26, color: "rgba(150, 255, 180," },
-      { x: 0.94, y: 0.21, color: "rgba(255, 220, 120," }
-    ];
-    garlandDots.forEach((d, idx) => {
-      const gAlpha = (Math.sin(now * 0.0035 + idx * 1.3) + 1) * 0.35 + 0.3;
-      ctx.fillStyle = `${d.color} ${gAlpha})`;
-      ctx.beginPath();
-      ctx.arc(d.x * w, d.y * h, 2.5, 0, Math.PI * 2);
-      ctx.fill();
-    });
-
-    // 5F. Shimmering Night Dust Motes
-    ctx.fillStyle = "rgba(190, 225, 255, 0.35)";
-    for (let i = 0; i < 10; i++) {
-      const mx = w * 0.40 + (Math.sin(now * 0.0008 + i * 1.5) * 0.18 + 0.18) * w;
-      const my = h * 0.25 + (i / 10) * (h * 0.40);
-      ctx.fillRect(mx, my, 2, 2);
-    }
-
     ctx.restore();
   }
 }

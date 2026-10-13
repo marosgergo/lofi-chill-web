@@ -1,12 +1,12 @@
 /**
  * GERE SZABADSÁGON - Main UI & Controller
- * 5 Scenes: DayZ Survival, Coding, Riverside Forest Walk, Panel Kitchen, Peaceful Sleep.
+ * 4 Scenes: DayZ Survival, Coding, Riverside Forest Walk, Panel Kitchen.
  * Clean, minimal navigation via arrows, keyboard, and touch swipe.
  * Simplified Lo-Fi Tape audio deck.
  */
 
 document.addEventListener("DOMContentLoaded", () => {
-  const sceneIds = ["gaming", "coding", "walking", "cooking", "sleeping"];
+  const sceneIds = ["gaming", "coding", "walking", "cooking"];
   let currentSceneIndex = 0;
 
   // DOM Elements
@@ -60,7 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
       switchScene(currentSceneIndex - 1);
     } else if (e.key === "ArrowRight") {
       switchScene(currentSceneIndex + 1);
-    } else if (e.key >= "1" && e.key <= "5") {
+    } else if (e.key >= "1" && e.key <= "4") {
       switchScene(parseInt(e.key) - 1);
     } else if (e.code === "Space") {
       e.preventDefault();
