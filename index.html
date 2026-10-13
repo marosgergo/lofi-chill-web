@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Gere szabadságon | Cozy Lo-Fi Chill World</title>
+  <meta name="description" content="Gere szabadságon - animált lo-fi pixel art világ. DayZ, kódolás határidők nélkül, folyóparti séta, panel konyha és békés alvás lo-fi zenével.">
+  
+  <!-- Google Fonts for Retro Pixel & Modern Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" type="image/jpeg" href="assets/images/avatar_gere.jpg">
+</head>
+<body class="crt-enabled">
+  <!-- CRT & Grain Overlays -->
+  <div class="crt-scanlines" id="scanlinesOverlay"></div>
+  <div class="crt-vignette"></div>
+
+  <!-- Main App Shell -->
+  <div class="app-container" id="appContainer">
+    
+    <!-- Top Header Bar -->
+    <header class="header-bar" id="headerBar">
+      <div class="header-left">
+        <div class="avatar-wrapper" id="avatarWrapper">
+          <img src="assets/images/avatar_gere.jpg" alt="Gere Avatar" id="userAvatar" class="avatar-img">
+          <span class="avatar-status-dot" title="Szabadságon"></span>
+        </div>
+        <div class="header-title-box">
+          <div class="header-badge">
+            <span class="badge-dot"></span>
+            <span class="badge-text">STATUS: OFF-DUTY</span>
+          </div>
+          <h1 class="main-title" id="mainTitle">Gere szabadságon</h1>
+          <p class="status-subtitle" id="statusSubtitle">🎮 DayZ: Túlélés a ködös erdőben...</p>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <!-- Live Clock & Vacation Status -->
+        <div class="vacation-widget">
+          <div class="clock-display" id="clockDisplay">12:00</div>
+          <div class="vacation-pill">🌴 CHILL MODE ON</div>
+        </div>
+        <!-- Quick Action Buttons -->
+        <div class="quick-controls">
+          <button class="icon-btn" id="crtToggleBtn" title="CRT képernyő effekt ki/be">
+            <span class="btn-icon">📺</span>
+            <span class="btn-label">CRT</span>
+          </button>
+          <button class="icon-btn" id="themeMoodBtn" title="Fényviszony váltása (Éjszaka / Alkonyat / Nappal)">
+            <span class="btn-icon" id="themeMoodIcon">🌙</span>
+            <span class="btn-label" id="themeMoodText">Éjjel</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Scene Navigation Tabs (5 Scenes) -->
+    <nav class="scene-navigation" id="sceneNav" aria-label="Jelenet választó">
+      <div class="nav-track nav-track-5" id="navTrack">
+        <button class="scene-tab active" data-scene="gaming" id="tabGaming">
+          <span class="tab-icon">🎮</span>
+          <span class="tab-label">DayZ</span>
+          <span class="tab-desc">Survival Game</span>
+        </button>
+        <button class="scene-tab" data-scene="coding" id="tabCoding">
+          <span class="tab-icon">💻</span>
+          <span class="tab-label">Kódolás</span>
+          <span class="tab-desc">Hacking & Dev</span>
+        </button>
+        <button class="scene-tab" data-scene="walking" id="tabWalking">
+          <span class="tab-icon">🌲</span>
+          <span class="tab-label">Folyópart</span>
+          <span class="tab-desc">Erdei séta</span>
+        </button>
+        <button class="scene-tab" data-scene="cooking" id="tabCooking">
+          <span class="tab-icon">🍳</span>
+          <span class="tab-label">Panel konyha</span>
+          <span class="tab-desc">Vacsora főzés</span>
+        </button>
+        <button class="scene-tab" data-scene="sleeping" id="tabSleeping">
+          <span class="tab-icon">🛏️</span>
+          <span class="tab-label">Alvás</span>
+          <span class="tab-desc">Édes álmok</span>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Main Scene Theater Stage -->
+    <main class="stage-container" id="stageContainer">
+      
+      <!-- Stage Viewport -->
+      <div class="stage-viewport" id="stageViewport">
+        
+        <!-- Scene 1: DayZ Survival Gaming -->
+        <section class="scene-card active" id="scene-gaming" data-scene-id="gaming">
+          <div class="scene-image-container">
+            <img src="assets/images/scene_gaming_dayz.jpg" alt="Gere DayZ survival játékkal játszik" class="scene-img">
+            <canvas class="scene-fx-canvas" id="canvas-gaming"></canvas>
+            <div class="scene-light-glow glow-cyan-purple"></div>
+          </div>
+          <div class="scene-overlay-info">
+            <div class="scene-tag">Helyszín: Számítógép • DayZ Chernarus</div>
+            <h2 class="scene-heading">DayZ túlélés a ködben</h2>
+            <p class="scene-quote">„Ködös erdő, elhagyatott őrtorony, hátizsák, puska... Iránytű északra, a túlélés az igazi kikapcsolódás.”</p>
+          </div>
+        </section>
+
+        <!-- Scene 2: Dedicated Coding Scene -->
+        <section class="scene-card" id="scene-coding" data-scene-id="coding">
+          <div class="scene-image-container">
+            <img src="assets/images/scene_coding.jpg" alt="Gere éjszaka kódol két monitor előtt" class="scene-img">
+            <canvas class="scene-fx-canvas" id="canvas-coding"></canvas>
+            <div class="scene-light-glow glow-cyan-purple"></div>
+          </div>
+          <div class="scene-overlay-info">
+            <div class="scene-tag">Helyszín: Fejlesztői íróasztal</div>
+            <h2 class="scene-heading">Éjszakai kódolás</h2>
+            <p class="scene-quote">„Két monitor, sötét téma, meleg kávé, eső az ablakon... Csak írom a kódot határidők nélkül.”</p>
+          </div>
+        </section>
+
+        <!-- Scene 3: Walking in Riverside Forest -->
+        <section class="scene-card" id="scene-walking" data-scene-id="walking">
+          <div class="scene-image-container">
+            <img src="assets/images/scene_forest_walk.jpg" alt="Gere sétál a folyóparti erdőben" class="scene-img">
+            <canvas class="scene-fx-canvas" id="canvas-walking"></canvas>
+            <div class="scene-light-glow glow-sunset"></div>
+          </div>
+          <div class="scene-overlay-info">
+            <div class="scene-tag">Helyszín: Folyóparti fenyves</div>
+            <h2 class="scene-heading">Séta a folyóparti erdőben</h2>
+            <p class="scene-quote">„Csörgedező tiszta folyóvíz, fenyőillat, őszi avar és szűrődő napfény a lombok között.”</p>
+          </div>
+        </section>
+
+        <!-- Scene 4: Cooking in Small Panel Apartment Kitchen -->
+        <section class="scene-card" id="scene-cooking" data-scene-id="cooking">
+          <div class="scene-image-container">
+            <img src="assets/images/scene_panel_kitchen.jpg" alt="Gere főz a panel konyhában" class="scene-img">
+            <canvas class="scene-fx-canvas" id="canvas-cooking"></canvas>
+            <div class="scene-light-glow glow-warm-kitchen"></div>
+          </div>
+          <div class="scene-overlay-info">
+            <div class="scene-tag">Helyszín: Panel konyha</div>
+            <h2 class="scene-heading">Főzés a panel konyhában</h2>
+            <p class="scene-quote">„Klasszikus kis panelkonyha, gáztűzhely, rotyogó gulyásleves... Az ablakból látni a többi panelházat.”</p>
+          </div>
+        </section>
+
+        <!-- Scene 5: Sleeping in Bed -->
+        <section class="scene-card" id="scene-sleeping" data-scene-id="sleeping">
+          <div class="scene-image-container">
+            <img src="assets/images/scene_sleeping.jpg" alt="Gere alszik a kényelmes ágyban" class="scene-img">
+            <canvas class="scene-fx-canvas" id="canvas-sleeping"></canvas>
+            <div class="scene-light-glow glow-night-sleep"></div>
+          </div>
+          <div class="scene-overlay-info">
+            <div class="scene-tag">Helyszín: Hálószoba • Éjszaka</div>
+            <h2 class="scene-heading">Békés alvás</h2>
+            <p class="scene-quote">„Gitár letéve, meleg takaró, csillagos éjszaka a felhőkarcolók felett... Végre egy jó pihenés.”</p>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- Arrow Navigation Controls -->
+      <button class="nav-arrow nav-prev" id="prevSceneBtn" title="Előző jelenet (Balra nyíl)">❮</button>
+      <button class="nav-arrow nav-next" id="nextSceneBtn" title="Következő jelenet (Jobbra nyíl)">❯</button>
+
+      <!-- Mobile Swipe Instruction Hint -->
+      <div class="swipe-hint" id="swipeHint">
+        <span>👈 Húzd balra/jobbra a lapozáshoz 👉</span>
+      </div>
+    </main>
+
+    <!-- Clean Bottom Lo-Fi Audio Deck (Easy track switching!) -->
+    <footer class="lofi-deck-bar" id="lofiDeckBar">
+      
+      <!-- Cassette Visual & Playback Controls -->
+      <div class="deck-playback-group">
+        <div class="cassette-module" id="cassetteModule">
+          <div class="cassette-body">
+            <div class="cassette-label-strip">
+              <span class="cassette-title" id="trackTitleDisplay">Gere Chill Tape #1</span>
+            </div>
+            <div class="cassette-window">
+              <div class="spool spool-left" id="spoolLeft"></div>
+              <div class="tape-strip"></div>
+              <div class="spool spool-right" id="spoolRight"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="deck-controls">
+          <button class="control-btn" id="prevTrackBtn" title="Előző szám (Váltás)">⏮</button>
+          <button class="control-btn play-main-btn" id="playPauseBtn" title="Lejátszás / Szünet (Szóköz)">
+            <span id="playIcon">▶</span>
+          </button>
+          <button class="control-btn" id="nextTrackBtn" title="Következő szám (Váltás)">⏭</button>
+          
+          <div class="track-meta">
+            <div class="current-track-name" id="trackName">Late Night Code & Chill</div>
+            <div class="track-artist">Gere's Vacation Tape • Szám váltás: ⏮ / ⏭</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Simple Master Volume Slider -->
+      <div class="deck-settings-group">
+        <div class="volume-slider-box">
+          <span class="vol-icon" id="volIcon">🔊</span>
+          <input type="range" min="0" max="100" value="70" class="retro-range" id="masterVolumeSlider" title="Hangerő">
+          <span class="vol-value" id="volValueDisplay">70%</span>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- Interactive Toast Notification -->
+  <div class="toast-notification" id="toastNotification">
+    <span class="toast-emoji" id="toastEmoji">✨</span>
+    <span class="toast-message" id="toastMessage">Értesítés</span>
+  </div>
+
+  <!-- Audio and Interactive Scripts -->
+  <script src="js/audio-engine.js"></script>
+  <script src="js/particles.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
