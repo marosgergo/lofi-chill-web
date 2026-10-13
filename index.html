@@ -14,81 +14,14 @@
   <link rel="stylesheet" href="css/style.css">
   <link rel="icon" type="image/jpeg" href="assets/images/avatar_gere.jpg">
 </head>
-<body class="crt-enabled">
-  <!-- CRT & Grain Overlays -->
-  <div class="crt-scanlines" id="scanlinesOverlay"></div>
-  <div class="crt-vignette"></div>
-
+<body>
   <!-- Main App Shell -->
   <div class="app-container" id="appContainer">
     
-    <!-- Top Header Bar -->
+    <!-- Clean Minimal Header -->
     <header class="header-bar" id="headerBar">
-      <div class="header-left">
-        <div class="avatar-wrapper" id="avatarWrapper">
-          <img src="assets/images/avatar_gere.jpg" alt="Gere Avatar" id="userAvatar" class="avatar-img">
-          <span class="avatar-status-dot" title="Szabadságon"></span>
-        </div>
-        <div class="header-title-box">
-          <div class="header-badge">
-            <span class="badge-dot"></span>
-            <span class="badge-text">STATUS: OFF-DUTY</span>
-          </div>
-          <h1 class="main-title" id="mainTitle">Gere szabadságon</h1>
-          <p class="status-subtitle" id="statusSubtitle">🎮 DayZ: Túlélés a ködös erdőben...</p>
-        </div>
-      </div>
-
-      <div class="header-right">
-        <!-- Live Clock & Vacation Status -->
-        <div class="vacation-widget">
-          <div class="clock-display" id="clockDisplay">12:00</div>
-          <div class="vacation-pill">🌴 CHILL MODE ON</div>
-        </div>
-        <!-- Quick Action Buttons -->
-        <div class="quick-controls">
-          <button class="icon-btn" id="crtToggleBtn" title="CRT képernyő effekt ki/be">
-            <span class="btn-icon">📺</span>
-            <span class="btn-label">CRT</span>
-          </button>
-          <button class="icon-btn" id="themeMoodBtn" title="Fényviszony váltása (Éjszaka / Alkonyat / Nappal)">
-            <span class="btn-icon" id="themeMoodIcon">🌙</span>
-            <span class="btn-label" id="themeMoodText">Éjjel</span>
-          </button>
-        </div>
-      </div>
+      <h1 class="main-title" id="mainTitle">Gere szabadságon</h1>
     </header>
-
-    <!-- Scene Navigation Tabs (5 Scenes) -->
-    <nav class="scene-navigation" id="sceneNav" aria-label="Jelenet választó">
-      <div class="nav-track nav-track-5" id="navTrack">
-        <button class="scene-tab active" data-scene="gaming" id="tabGaming">
-          <span class="tab-icon">🎮</span>
-          <span class="tab-label">DayZ</span>
-          <span class="tab-desc">Survival Game</span>
-        </button>
-        <button class="scene-tab" data-scene="coding" id="tabCoding">
-          <span class="tab-icon">💻</span>
-          <span class="tab-label">Kódolás</span>
-          <span class="tab-desc">Hacking & Dev</span>
-        </button>
-        <button class="scene-tab" data-scene="walking" id="tabWalking">
-          <span class="tab-icon">🌲</span>
-          <span class="tab-label">Folyópart</span>
-          <span class="tab-desc">Erdei séta</span>
-        </button>
-        <button class="scene-tab" data-scene="cooking" id="tabCooking">
-          <span class="tab-icon">🍳</span>
-          <span class="tab-label">Panel konyha</span>
-          <span class="tab-desc">Vacsora főzés</span>
-        </button>
-        <button class="scene-tab" data-scene="sleeping" id="tabSleeping">
-          <span class="tab-icon">🛏️</span>
-          <span class="tab-label">Alvás</span>
-          <span class="tab-desc">Édes álmok</span>
-        </button>
-      </div>
-    </nav>
 
     <!-- Main Scene Theater Stage -->
     <main class="stage-container" id="stageContainer">
@@ -220,12 +153,6 @@
       </div>
     </footer>
 
-  </div>
-
-  <!-- Interactive Toast Notification -->
-  <div class="toast-notification" id="toastNotification">
-    <span class="toast-emoji" id="toastEmoji">✨</span>
-    <span class="toast-message" id="toastMessage">Értesítés</span>
   </div>
 
   <!-- Audio and Interactive Scripts -->
