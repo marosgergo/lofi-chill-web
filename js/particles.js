@@ -46,8 +46,6 @@ class SceneAnimationEngine {
       // Scene 4: Panel Kitchen
       bubbles: [],
       kitchenSteam: [],
-      kitchenZzz: [],
-      lastKitchenZzzTime: 0,
 
       // Scene 5: Sleeping
       sleepZzz: [],
@@ -494,29 +492,7 @@ class SceneAnimationEngine {
       if (st.alpha <= 0) s.kitchenSteam.splice(i, 1);
     }
 
-    // 4D. Sleeping Cat at Radiator (x: 0.92w, y: 0.79h)
-    const catX = w * 0.92;
-    const catY = h * 0.79;
-    if (now - s.lastKitchenZzzTime > 2200) {
-      s.lastKitchenZzzTime = now;
-      s.kitchenZzz.push({
-        x: catX - 4,
-        y: catY - 8,
-        text: Math.random() > 0.5 ? "Z" : "z",
-        alpha: 0.85
-      });
-    }
 
-    ctx.font = "bold 11px monospace";
-    for (let i = s.kitchenZzz.length - 1; i >= 0; i--) {
-      const z = s.kitchenZzz[i];
-      z.y -= 0.45;
-      z.x -= 0.25;
-      z.alpha -= 0.005;
-      ctx.fillStyle = `rgba(255, 255, 255, ${Math.max(0, z.alpha)})`;
-      ctx.fillText(z.text, z.x, z.y);
-      if (z.alpha <= 0) s.kitchenZzz.splice(i, 1);
-    }
 
     // 4E. Eye Blink
     if (s.isBlinking) {
