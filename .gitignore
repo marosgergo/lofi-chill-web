@@ -31,3 +31,11 @@ scratch/
 .tempmediaStorage/
 *.tmp
 *.log
+
+# Personal reference photos (keep local only, do not commit to repository)
+IMG_*.jpg
+IMG_*.jpeg
+IMG_*.png
+assets/images/user_photo_portrait.jpg
+assets/images/user_photo_vacation.jpg
+
