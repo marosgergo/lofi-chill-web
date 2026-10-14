@@ -22,30 +22,82 @@ document.addEventListener("DOMContentLoaded", () => {
   const rotateHint = document.getElementById("rotateHint");
 
   // ==========================================================
-  // FULLSCREEN API (Android Chrome & Desktop)
+  // FULLSCREEN & AUTO-LANDSCAPE ORIENTATION (Android & iOS)
   // ==========================================================
+  let isPseudoFullscreen = false;
+
   function isFullscreen() {
-    return !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
+    return !!(
+      document.fullscreenElement ||
+      document.webkitFullscreenElement ||
+      document.mozFullScreenElement ||
+      document.msFullscreenElement ||
+      isPseudoFullscreen
+    );
   }
 
-  function toggleFullscreen() {
-    if (!isFullscreen()) {
+  async function toggleFullscreen() {
+    const isCurrentlyFs = isFullscreen();
+
+    if (!isCurrentlyFs) {
+      // 1. Try Native Fullscreen (Desktop & Android)
       const elem = document.documentElement;
-      if (elem.requestFullscreen) {
-        elem.requestFullscreen().catch(() => {});
-      } else if (elem.webkitRequestFullscreen) {
-        elem.webkitRequestFullscreen();
-      } else if (elem.msRequestFullscreen) {
-        elem.msRequestFullscreen();
+      try {
+        if (elem.requestFullscreen) {
+          await elem.requestFullscreen();
+        } else if (elem.webkitRequestFullscreen) {
+          await elem.webkitRequestFullscreen();
+        }
+      } catch (err) {
+        // Native fullscreen not supported or blocked (e.g. iOS Safari)
       }
+
+      // 2. Try Physical Screen Orientation Lock to Landscape (Android)
+      let orientationLocked = false;
+      try {
+        if (screen.orientation && screen.orientation.lock) {
+          await screen.orientation.lock("landscape");
+          orientationLocked = true;
+        }
+      } catch (err) {
+        // Orientation lock not supported or failed (e.g. iOS)
+      }
+
+      // 3. iOS Safari & Portrait Fallback:
+      // If we are in portrait and orientation wasn't physically locked,
+      // activate virtual 90deg landscape cinema mode!
+      isPseudoFullscreen = true;
+      document.body.classList.add("is-fullscreen");
+
+      const isPortrait = window.innerHeight > window.innerWidth;
+      if (isPortrait && !orientationLocked) {
+        document.body.classList.add("pseudo-landscape-mode");
+      }
+
+      // Trigger scroll trick to minimize iOS Safari address bar
+      window.scrollTo(0, 1);
+
+      updateFullscreenUI();
     } else {
-      if (document.exitFullscreen) {
-        document.exitFullscreen().catch(() => {});
-      } else if (document.webkitExitFullscreen) {
-        document.webkitExitFullscreen();
-      } else if (document.msExitFullscreen) {
-        document.msExitFullscreen();
-      }
+      // Exit Fullscreen
+      isPseudoFullscreen = false;
+      document.body.classList.remove("is-fullscreen", "pseudo-landscape-mode");
+
+      try {
+        if (document.exitFullscreen) {
+          await document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+          await document.webkitExitFullscreen();
+        }
+      } catch (err) {}
+
+      try {
+        if (screen.orientation && screen.orientation.unlock) {
+          screen.orientation.unlock();
+        }
+      } catch (err) {}
+
+      updateFullscreenUI();
     }
   }
 
@@ -65,6 +117,22 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // Handle physical device rotation
+  function handleOrientationChange() {
+    const isPhysicalLandscape = window.innerWidth > window.innerHeight;
+    if (isPhysicalLandscape) {
+      // Already physically horizontal: remove CSS virtual rotation
+      document.body.classList.remove("pseudo-landscape-mode");
+    } else if (isPseudoFullscreen && !document.fullscreenElement) {
+      // Turned back to vertical on iOS: restore virtual landscape
+      document.body.classList.add("pseudo-landscape-mode");
+    }
+    updateFullscreenUI();
+  }
+
+  window.addEventListener("resize", handleOrientationChange);
+  window.addEventListener("orientationchange", handleOrientationChange);
+
   if (fullscreenBtn) {
     fullscreenBtn.addEventListener("click", toggleFullscreen);
   }
@@ -73,7 +141,18 @@ document.addEventListener("DOMContentLoaded", () => {
     rotateHint.addEventListener("click", toggleFullscreen);
   }
 
-  document.addEventListener("fullscreenchange", updateFullscreenUI);
+  document.addEventListener("fullscreenchange", () => {
+    if (!document.fullscreenElement) {
+      isPseudoFullscreen = false;
+      document.body.classList.remove("is-fullscreen", "pseudo-landscape-mode");
+      try {
+        if (screen.orientation && screen.orientation.unlock) {
+          screen.orientation.unlock();
+        }
+      } catch (e) {}
+    }
+    updateFullscreenUI();
+  });
   document.addEventListener("webkitfullscreenchange", updateFullscreenUI);
 
   // ==========================================================

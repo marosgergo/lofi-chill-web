@@ -621,4 +621,104 @@ body.mode-opt2 .scene-opt2 {
   }
 }
 
+/* ==========================================================
+   VIRTUAL LANDSCAPE MODE (iOS Safari & Fallback)
+   Rotates the app 90deg into cinema mode when in portrait
+   ========================================================== */
+body.pseudo-landscape-mode {
+  position: fixed !important;
+  top: 0 !important;
+  left: 100vw !important;
+  left: 100dvw !important;
+  width: 100vh !important;
+  width: 100dvh !important;
+  height: 100vw !important;
+  height: 100dvw !important;
+  transform: rotate(90deg) !important;
+  transform-origin: 0 0 !important;
+  overflow: hidden !important;
+  z-index: 99999 !important;
+}
+
+body.pseudo-landscape-mode .app-container {
+  width: 100% !important;
+  height: 100% !important;
+  padding: 0 !important;
+  gap: 0 !important;
+  margin: 0 !important;
+}
+
+body.pseudo-landscape-mode .header-bar {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  padding: calc(10px + env(safe-area-inset-top, 0px)) calc(14px + env(safe-area-inset-right, 0px)) 0 0 !important;
+  pointer-events: none !important;
+  z-index: 40 !important;
+}
+
+body.pseudo-landscape-mode .header-left {
+  display: none !important;
+}
+
+body.pseudo-landscape-mode .header-right {
+  margin-left: auto !important;
+  pointer-events: auto !important;
+  gap: 8px !important;
+}
+
+body.pseudo-landscape-mode .control-btn-minimal {
+  width: 34px !important;
+  height: 34px !important;
+  font-size: 0.9rem !important;
+  background: rgba(14, 14, 26, 0.7) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5) !important;
+}
+
+body.pseudo-landscape-mode .stage-container {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 100% !important;
+  flex: 1 !important;
+  border-radius: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
+  margin: 0 !important;
+}
+
+body.pseudo-landscape-mode .stage-viewport {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 100% !important;
+}
+
+body.pseudo-landscape-mode .scene-img {
+  object-fit: cover !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+body.pseudo-landscape-mode .rotate-hint {
+  display: none !important;
+}
+
+body.pseudo-landscape-mode .nav-arrow {
+  width: 36px !important;
+  height: 36px !important;
+  font-size: 0.9rem !important;
+  background: rgba(15, 15, 25, 0.65) !important;
+}
+body.pseudo-landscape-mode .nav-prev { left: calc(10px + env(safe-area-inset-left, 0px)) !important; }
+body.pseudo-landscape-mode .nav-next { right: calc(10px + env(safe-area-inset-right, 0px)) !important; }
+
+
 
