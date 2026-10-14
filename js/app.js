@@ -1,8 +1,8 @@
 /**
- * GERE SZABADSÁGON - Main UI & Controller
- * 4 Scenes: DayZ Survival, Coding, Riverside Forest Walk, Panel Kitchen.
- * Clean, minimal navigation via arrows, keyboard, and touch swipe.
- * Simplified Lo-Fi Tape audio deck.
+ * GERE SZABADSÁGON - Main UI & Scene Controller
+ * - 4 Scenes: DayZ Survival, Coding, Riverside Forest Walk, Panel Kitchen.
+ * - Arrow buttons, keyboard navigation (1-4, Left/Right), and mobile touch swipe.
+ * - Automatic startup background lo-fi music with a clean minimal Mute button.
  */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -14,18 +14,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const prevBtn = document.getElementById("prevSceneBtn");
   const nextBtn = document.getElementById("nextSceneBtn");
   const stageViewport = document.getElementById("stageViewport");
-
-  // Audio UI Elements
-  const playPauseBtn = document.getElementById("playPauseBtn");
-  const playIcon = document.getElementById("playIcon");
-  const prevTrackBtn = document.getElementById("prevTrackBtn");
-  const nextTrackBtn = document.getElementById("nextTrackBtn");
-  const trackName = document.getElementById("trackName");
-  const trackTitleDisplay = document.getElementById("trackTitleDisplay");
-  const cassetteModule = document.getElementById("cassetteModule");
-  const masterVolumeSlider = document.getElementById("masterVolumeSlider");
-  const volValueDisplay = document.getElementById("volValueDisplay");
-  const volIcon = document.getElementById("volIcon");
+  const muteBtn = document.getElementById("muteBtn");
+  const muteIcon = document.getElementById("muteIcon");
 
   // ==========================================================
   // SCENE SWITCHING
@@ -37,7 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const activeId = sceneIds[currentSceneIndex];
 
-    // Update Cards
+    // Update active scene cards
     scenes.forEach(card => {
       card.classList.toggle("active", card.dataset.sceneId === activeId);
     });
@@ -62,9 +52,9 @@ document.addEventListener("DOMContentLoaded", () => {
       switchScene(currentSceneIndex + 1);
     } else if (e.key >= "1" && e.key <= "4") {
       switchScene(parseInt(e.key) - 1);
-    } else if (e.code === "Space") {
+    } else if (e.key === "m" || e.key === "M" || e.code === "Space") {
       e.preventDefault();
-      toggleMusicPlayback();
+      handleToggleMute();
     }
   });
 
@@ -102,59 +92,56 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ==========================================================
-  // AUDIO PLAYBACK & DECK CONTROLS
+  // AUDIO CONTROLS (AUTOPLAY + MUTE BUTTON ONLY)
   // ==========================================================
-  function updateTrackMeta() {
+  function handleToggleMute() {
     if (!window.lofiAudio) return;
-    const track = window.lofiAudio.getCurrentTrack();
-    if (trackName) trackName.textContent = track.title;
-    if (trackTitleDisplay) trackTitleDisplay.textContent = `${track.title} • Tape #${window.lofiAudio.currentTrackIndex + 1}`;
+    const isMuted = window.lofiAudio.toggleMute();
+    updateMuteUI(isMuted);
   }
 
-  function toggleMusicPlayback() {
-    if (!window.lofiAudio) return;
-    const isPlaying = window.lofiAudio.togglePlay();
-    if (isPlaying) {
-      if (playIcon) playIcon.textContent = "⏸";
-      if (cassetteModule) cassetteModule.classList.add("playing");
+  function updateMuteUI(isMuted) {
+    if (!muteBtn || !muteIcon) return;
+    if (isMuted) {
+      muteIcon.textContent = "🔇";
+      muteBtn.classList.add("muted");
+      muteBtn.title = "Visszahangosítás (M)";
     } else {
-      if (playIcon) playIcon.textContent = "▶";
-      if (cassetteModule) cassetteModule.classList.remove("playing");
+      muteIcon.textContent = "🔊";
+      muteBtn.classList.remove("muted");
+      muteBtn.title = "Némítás (M)";
     }
-    updateTrackMeta();
   }
 
-  if (playPauseBtn) playPauseBtn.addEventListener("click", toggleMusicPlayback);
-
-  if (prevTrackBtn) {
-    prevTrackBtn.addEventListener("click", () => {
-      if (!window.lofiAudio) return;
-      window.lofiAudio.prevTrack();
-      updateTrackMeta();
-    });
+  if (muteBtn) {
+    muteBtn.addEventListener("click", handleToggleMute);
   }
 
-  if (nextTrackBtn) {
-    nextTrackBtn.addEventListener("click", () => {
-      if (!window.lofiAudio) return;
-      window.lofiAudio.nextTrack();
-      updateTrackMeta();
-    });
+  // ==========================================================
+  // RELIABLE STARTUP AUTOPLAY
+  // ==========================================================
+  function startAudio() {
+    if (!window.lofiAudio) return;
+    window.lofiAudio.start();
+    updateMuteUI(window.lofiAudio.isMuted);
   }
 
-  // Master Volume
-  if (masterVolumeSlider) {
-    masterVolumeSlider.addEventListener("input", (e) => {
-      const val = parseInt(e.target.value) / 100;
-      if (volValueDisplay) volValueDisplay.textContent = `${e.target.value}%`;
-      if (window.lofiAudio) {
-        window.lofiAudio.setMasterVolume(val);
-      }
-      if (volIcon) {
-        if (val === 0) volIcon.textContent = "🔇";
-        else if (val < 0.5) volIcon.textContent = "🔉";
-        else volIcon.textContent = "🔊";
-      }
-    });
-  }
+  // 1. Try immediate autoplay on page load
+  startAudio();
+
+  // 2. Browser autoplay fallback: resume seamlessly on first user interaction
+  const resumeOnFirstGesture = () => {
+    if (window.lofiAudio) {
+      window.lofiAudio.start();
+    }
+    window.removeEventListener("click", resumeOnFirstGesture);
+    window.removeEventListener("keydown", resumeOnFirstGesture);
+    window.removeEventListener("touchstart", resumeOnFirstGesture);
+    window.removeEventListener("pointerdown", resumeOnFirstGesture);
+  };
+
+  window.addEventListener("click", resumeOnFirstGesture, { once: true });
+  window.addEventListener("keydown", resumeOnFirstGesture, { once: true });
+  window.addEventListener("touchstart", resumeOnFirstGesture, { once: true });
+  window.addEventListener("pointerdown", resumeOnFirstGesture, { once: true });
 });

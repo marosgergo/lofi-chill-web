@@ -18,9 +18,12 @@
   <!-- Main App Shell -->
   <div class="app-container" id="appContainer">
     
-    <!-- Clean Minimal Header -->
+    <!-- Clean Minimal Header with Minimal Mute Button -->
     <header class="header-bar" id="headerBar">
       <h1 class="main-title" id="mainTitle">Gere szabadságon</h1>
+      <button class="mute-btn-minimal" id="muteBtn" title="Némítás / Visszahangosítás (M)" aria-label="Némítás">
+        <span id="muteIcon">🔊</span>
+      </button>
     </header>
 
     <!-- Main Scene Theater Stage -->
@@ -76,48 +79,6 @@
         <span>👈 Húzd balra/jobbra a lapozáshoz 👉</span>
       </div>
     </main>
-
-    <!-- Clean Bottom Lo-Fi Audio Deck (Easy track switching!) -->
-    <footer class="lofi-deck-bar" id="lofiDeckBar">
-      
-      <!-- Cassette Visual & Playback Controls -->
-      <div class="deck-playback-group">
-        <div class="cassette-module" id="cassetteModule">
-          <div class="cassette-body">
-            <div class="cassette-label-strip">
-              <span class="cassette-title" id="trackTitleDisplay">Gere Chill Tape #1</span>
-            </div>
-            <div class="cassette-window">
-              <div class="spool spool-left" id="spoolLeft"></div>
-              <div class="tape-strip"></div>
-              <div class="spool spool-right" id="spoolRight"></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="deck-controls">
-          <button class="control-btn" id="prevTrackBtn" title="Előző szám (Váltás)">⏮</button>
-          <button class="control-btn play-main-btn" id="playPauseBtn" title="Lejátszás / Szünet (Szóköz)">
-            <span id="playIcon">▶</span>
-          </button>
-          <button class="control-btn" id="nextTrackBtn" title="Következő szám (Váltás)">⏭</button>
-          
-          <div class="track-meta">
-            <div class="current-track-name" id="trackName">Late Night Code & Chill</div>
-            <div class="track-artist">Gere's Vacation Tape • Szám váltás: ⏮ / ⏭</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Simple Master Volume Slider -->
-      <div class="deck-settings-group">
-        <div class="volume-slider-box">
-          <span class="vol-icon" id="volIcon">🔊</span>
-          <input type="range" min="0" max="100" value="70" class="retro-range" id="masterVolumeSlider" title="Hangerő">
-          <span class="vol-value" id="volValueDisplay">70%</span>
-        </div>
-      </div>
-    </footer>
 
   </div>
 

@@ -12,16 +12,17 @@ class LoFiAudioEngine {
     this.isPlaying = false;
     this.currentTrackIndex = 0;
     
-    // Master & Sound Volumes
-    this.masterVolume = 0.7;
-    this.musicVolume = 0.85;
-    
+    // Master & Sound Volumes (Soft, cozy lo-fi background level)
+    this.masterVolume = 0.35;
+    this.musicVolume = 0.75;
+    this.isMuted = false;
+    this.previousVolume = 0.35;
 
-    // 5 Chill Tracks definition matching Gere's 5 vacation moods
+    // Default Lo-Fi Track
     this.tracks = [
       {
         title: "Late Night Code & Chill",
-        artist: "Gere's Vacation Tape • Track 1/5",
+        artist: "Gere szabadságon • Lo-Fi Beats",
         bpm: 74,
         scale: [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88],
         chords: [
@@ -31,54 +32,6 @@ class LoFiAudioEngine {
           [196.00, 246.94, 293.66, 349.23, 440.00] // G9
         ],
         bass: [130.81, 110.00, 146.83, 98.00]
-      },
-      {
-        title: "DayZ Survival Calm in Fog",
-        artist: "Gere's Vacation Tape • Track 2/5",
-        bpm: 68,
-        chords: [
-          [220.00, 261.63, 329.63, 392.00], // Am7
-          [174.61, 220.00, 261.63, 329.63], // Fmaj7
-          [196.00, 246.94, 293.66, 349.23], // G7
-          [164.81, 196.00, 246.94, 293.66]  // Em7
-        ],
-        bass: [110.00, 87.31, 98.00, 82.41]
-      },
-      {
-        title: "Riverside Forest Stroll",
-        artist: "Gere's Vacation Tape • Track 3/5",
-        bpm: 76,
-        chords: [
-          [233.08, 293.66, 349.23, 440.00], // Bbmaj7
-          [196.00, 233.08, 293.66, 349.23], // Gm7
-          [261.63, 311.13, 392.00, 466.16], // Cm7
-          [174.61, 220.00, 261.63, 311.13]  // F7
-        ],
-        bass: [116.54, 98.00, 130.81, 87.31]
-      },
-      {
-        title: "Panel Kitchen Midnight Stew",
-        artist: "Gere's Vacation Tape • Track 4/5",
-        bpm: 72,
-        chords: [
-          [349.23, 440.00, 523.25, 659.25], // Fmaj7
-          [329.63, 392.00, 493.88, 587.33], // Em7
-          [293.66, 349.23, 440.00, 523.25], // Dm7
-          [261.63, 329.63, 392.00, 493.88]  // Cmaj7
-        ],
-        bass: [174.61, 164.81, 146.83, 130.81]
-      },
-      {
-        title: "Starry Night Sweet Dreams",
-        artist: "Gere's Vacation Tape • Track 5/5",
-        bpm: 64,
-        chords: [
-          [311.13, 392.00, 466.16, 587.33], // Ebmaj7
-          [261.63, 311.13, 392.00, 466.16], // Cm7
-          [349.23, 415.30, 523.25, 622.25], // Fm7
-          [233.08, 293.66, 349.23, 415.30]  // Bb7
-        ],
-        bass: [155.56, 130.81, 174.61, 116.54]
       }
     ];
 
@@ -308,17 +261,28 @@ class LoFiAudioEngine {
   // ==========================================
   // PUBLIC CONTROLS
   // ==========================================
-  togglePlay() {
+  start() {
     this.initContext();
-    if (this.ctx.state === "suspended") {
-      this.ctx.resume();
+    if (this.ctx && this.ctx.state === "suspended") {
+      this.ctx.resume().catch(() => {});
     }
-
-    this.isPlaying = !this.isPlaying;
-    if (this.isPlaying) {
+    if (!this.isPlaying) {
+      this.isPlaying = true;
       this.scheduleBeat();
+    }
+    return this.isPlaying;
+  }
+
+  stop() {
+    this.isPlaying = false;
+    clearTimeout(this.stepTimeout);
+  }
+
+  togglePlay() {
+    if (this.isPlaying) {
+      this.stop();
     } else {
-      clearTimeout(this.stepTimeout);
+      this.start();
     }
     return this.isPlaying;
   }
@@ -341,9 +305,30 @@ class LoFiAudioEngine {
 
   setMasterVolume(val) {
     this.masterVolume = Math.max(0, Math.min(1, val));
-    if (this.masterGain && this.ctx) {
-      this.masterGain.gain.setValueAtTime(this.masterVolume, this.ctx.currentTime);
+    if (this.masterVolume > 0) {
+      this.isMuted = false;
     }
+    if (this.masterGain && this.ctx) {
+      this.masterGain.gain.setValueAtTime(this.isMuted ? 0 : this.masterVolume, this.ctx.currentTime);
+    }
+  }
+
+  toggleMute() {
+    this.initContext();
+    this.isMuted = !this.isMuted;
+    if (this.isMuted) {
+      this.previousVolume = this.masterVolume > 0 ? this.masterVolume : 0.7;
+      if (this.masterGain && this.ctx) {
+        this.masterGain.gain.setValueAtTime(0, this.ctx.currentTime);
+      }
+    } else {
+      const restore = this.previousVolume > 0 ? this.previousVolume : 0.7;
+      this.masterVolume = restore;
+      if (this.masterGain && this.ctx) {
+        this.masterGain.gain.setValueAtTime(restore, this.ctx.currentTime);
+      }
+    }
+    return this.isMuted;
   }
 
 }
