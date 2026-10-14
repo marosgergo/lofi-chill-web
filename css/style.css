@@ -457,15 +457,17 @@ body.mode-opt2 .scene-opt2 {
   }
 }
 
-/* Mobile Portrait Mode */
-@media (max-width: 768px) and (orientation: portrait) {
+/* Mobile Portrait Mode & Vertical Screens */
+@media (max-width: 850px) and (orientation: portrait), (max-width: 600px) {
   .app-container {
     padding: 12px 10px;
-    gap: 12px;
+    gap: 14px;
     justify-content: center;
+    align-items: center;
   }
 
   .header-bar {
+    width: 100%;
     padding: 10px 16px;
   }
 
@@ -487,7 +489,7 @@ body.mode-opt2 .scene-opt2 {
     height: auto !important;
     min-height: unset !important;
     flex: none !important;
-    margin: auto 0;
+    margin: 0 !important;
   }
 
   .stage-viewport {
@@ -496,8 +498,12 @@ body.mode-opt2 .scene-opt2 {
     min-height: unset !important;
   }
 
+  /* Rotation hint placed directly below the stage container */
   .rotate-hint {
-    display: flex;
+    display: flex !important;
+    margin: 4px auto 0 auto;
+    width: auto;
+    max-width: 90%;
   }
 
   .nav-arrow {

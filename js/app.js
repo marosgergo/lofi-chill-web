@@ -17,7 +17,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const muteBtn = document.getElementById("muteBtn");
   const muteIcon = document.getElementById("muteIcon");
   const fullscreenBtn = document.getElementById("fullscreenBtn");
-  const fullscreenIcon = document.getElementById("fullscreenIcon");
+  const expandIcon = document.querySelector("#fullscreenSvg .icon-expand");
+  const compressIcon = document.querySelector("#fullscreenSvg .icon-compress");
   const rotateHint = document.getElementById("rotateHint");
 
   // ==========================================================
@@ -49,13 +50,16 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function updateFullscreenUI() {
-    if (!fullscreenBtn || !fullscreenIcon) return;
-    if (isFullscreen()) {
-      fullscreenIcon.textContent = "🗗";
+    if (!fullscreenBtn) return;
+    const active = isFullscreen();
+    if (active) {
+      if (expandIcon) expandIcon.style.display = "none";
+      if (compressIcon) compressIcon.style.display = "block";
       fullscreenBtn.classList.add("active");
       fullscreenBtn.title = "Kilépés a teljes képernyőből (F)";
     } else {
-      fullscreenIcon.textContent = "⛶";
+      if (expandIcon) expandIcon.style.display = "block";
+      if (compressIcon) compressIcon.style.display = "none";
       fullscreenBtn.classList.remove("active");
       fullscreenBtn.title = "Teljes képernyő (F)";
     }

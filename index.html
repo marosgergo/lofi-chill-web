@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
   
-  <link rel="stylesheet" href="css/style.css?v=20261014_5">
+  <link rel="stylesheet" href="css/style.css?v=20261014_6">
   <link rel="icon" type="image/jpeg" href="assets/images/avatar_gere.jpg">
 </head>
 <body>
@@ -29,7 +29,14 @@
 
       <div class="header-right">
         <button class="control-btn-minimal" id="fullscreenBtn" title="Teljes képernyő (F)" aria-label="Teljes képernyő">
-          <span id="fullscreenIcon">⛶</span>
+          <svg class="fullscreen-svg" id="fullscreenSvg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <g class="icon-expand">
+              <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+            </g>
+            <g class="icon-compress" style="display: none;">
+              <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/>
+            </g>
+          </svg>
         </button>
         <button class="control-btn-minimal mute-btn-minimal" id="muteBtn" title="Némítás / Visszahangosítás (M)" aria-label="Némítás">
           <span id="muteIcon">🔊</span>
@@ -98,7 +105,7 @@
   </div>
 
   <!-- Audio and Interactive Scripts -->
-  <script src="js/audio-engine.js?v=20261014_3"></script>
-  <script src="js/app.js?v=20261014_3"></script>
+  <script src="js/audio-engine.js?v=20261014_6"></script>
+  <script src="js/app.js?v=20261014_6"></script>
 </body>
 </html>
