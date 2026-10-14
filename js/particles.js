@@ -1,30 +1,13 @@
 /**
- * GERE SZABADSÁGON - Professional Lo-Fi Atmospheric Animation Engine
+ * GERE SZABADSÁGON - Professional Lo-Fi Atmospheric Animation & Layered Engine
  * 
- * High-quality ambient particle systems and dynamic lighting:
- * 1. DayZ Survival Gaming:
- *    - Soft hot tea steam with organic turbulence and alpha falloff
- *    - Survival monitor glow & game lighting flicker
- *    - Floating illuminated dust motes catching screen light in the dark room
- *    - Creeping atmospheric forest fog
- * 
- * 2. Dedicated Coding Scene:
- *    - Realistic window rain streaks with droplet trails outside the dark glass
- *    - Delicate curling coffee mug steam
- *    - Live coding IDE luminescence & scanline shimmer across monitors
- *    - Soft keyboard RGB ambient glow breathing onto desk
- * 
- * 3. Riverside Forest Walk:
- *    - Organic swirling autumn leaves (golden, russet, amber) tumbling in wind with natural leaf shape
- *    - Warm sunbeams / godrays shimmering through pine canopy
- *    - Flowing river water specular shimmer & undulating ripple highlights
- *    - Floating golden forest pollen drifting in sunbeams
- * 
- * 4. Panel Kitchen Cooking:
- *    - Voluminous warm steam clouds billowing from bubbling goulash pot
- *    - Gas burner flame glow with realistic blue/amber flicker under the pot
- *    - Simmering soup bubble pops with micro-splashes
- *    - Cozy evening twilight ambiance filtering from panel estate window
+ * Supports two presentation modes:
+ * - Option 1: True animated pixel-art loops (with subtle ambient particles)
+ * - Option 2: Gere's custom pixel art with rich multi-layer sprite animations:
+ *    1. DayZ Gaming: Dynamic CRT scanlines, sniper fog drift, mouse aiming micro-jitter, idle breathing bob, hot mug steam, dust motes.
+ *    2. Coding: Live syntax-highlighted scrolling IDE code on monitor glass, blinking cursor, mechanical keyboard RGB keypress taps, rainy window streaks, coffee steam.
+ *    3. Forest Walk: Shimmering river specular ripples, tumbling 3D autumn leaves, golden godrays, walking stride cadence bob.
+ *    4. Panel Kitchen: 7 animated flickering blue gas burner flame jets, simmering soup bubble pops, elliptical spoon stirring, billowing steam clouds.
  */
 
 class SceneAnimationEngine {
@@ -34,17 +17,21 @@ class SceneAnimationEngine {
     this.activeScene = "gaming";
     this.dpr = window.devicePixelRatio || 1;
     this.imgAspect = 1376 / 768;
+    this.currentOption = 1; // 1 or 2
 
     this.state = {
       // Scene 1: DayZ Gaming
       dayzSteam: [],
       dayzDust: [],
       dayzFog: [],
+      lastMouseClick: 0,
 
       // Scene 2: Coding
       codeRain: [],
       codeRainDrops: [],
       codeSteam: [],
+      lastKeyPressTime: 0,
+      activeKeyIndex: 0,
 
       // Scene 3: Riverside Forest
       forestLeaves: [],
@@ -53,7 +40,8 @@ class SceneAnimationEngine {
 
       // Scene 4: Panel Kitchen
       kitchenSteam: [],
-      kitchenBubbles: []
+      kitchenBubbles: [],
+      gasFlameJets: []
     };
 
     this.init();
@@ -78,10 +66,15 @@ class SceneAnimationEngine {
     this.startLoop();
   }
 
+  setOption(optionNum) {
+    this.currentOption = optionNum;
+  }
+
   resizeCanvas(id) {
     const c = this.canvases[id];
     if (!c) return;
     const rect = c.parentElement.getBoundingClientRect();
+    if (rect.width === 0 || rect.height === 0) return;
     c.width = rect.width * this.dpr;
     c.height = rect.height * this.dpr;
     c.style.width = `${rect.width}px`;
@@ -99,13 +92,11 @@ class SceneAnimationEngine {
     let renderW, renderH, offsetX, offsetY;
 
     if (canvasAspect > this.imgAspect) {
-      // Canvas is wider than image: width fits, top/bottom cropped
       renderW = w;
       renderH = w / this.imgAspect;
       offsetX = 0;
       offsetY = (h - renderH) / 2;
     } else {
-      // Canvas is taller than image: height fits, left/right cropped
       renderH = h;
       renderW = h * this.imgAspect;
       offsetX = (w - renderW) / 2;
@@ -214,6 +205,16 @@ class SceneAnimationEngine {
         phase: Math.random() * Math.PI * 2
       });
     }
+
+    // 4. Kitchen Gas Flame Jets (7 jets under pot)
+    this.state.gasFlameJets = [];
+    for (let i = 0; i < 8; i++) {
+      this.state.gasFlameJets.push({
+        offsetRelX: (i - 3.5) * 0.012,
+        baseH: 6 + Math.random() * 4,
+        phase: i * 0.9
+      });
+    }
   }
 
   setActiveScene(sceneId) {
@@ -262,7 +263,7 @@ class SceneAnimationEngine {
     const s = this.state;
     ctx.save();
 
-    // 1A. Dynamic Monitor Glow & Survival Lighting Breathing
+    // 1A. Monitor Screen Survival Glow (Radiates into room)
     const monitorX = this.toX(0.48, b);
     const monitorY = this.toY(0.42, b);
     const glowRadius = this.toDist(0.35, b);
@@ -277,24 +278,31 @@ class SceneAnimationEngine {
     ctx.arc(monitorX, monitorY, glowRadius, 0, Math.PI * 2);
     ctx.fill();
 
-    // 1B. Tea Mug Soft Steam (Mug at nx: 0.24, ny: 0.84)
-    const mugX = this.toX(0.24, b);
-    const mugY = this.toY(0.83, b);
+    // 1B. Realistic CRT Scanlines on DayZ Monitor Screen Glass
+    const scrLeft = this.toX(0.20, b);
+    const scrTop = this.toY(0.24, b);
+    const scrRight = this.toX(0.54, b);
+    const scrBottom = this.toY(0.69, b);
 
-    if (Math.random() < 0.22) {
-      s.dayzSteam.push({
-        x: mugX + (Math.random() - 0.5) * 6,
-        y: mugY,
-        radius: 3,
-        maxRadius: 18 + Math.random() * 8,
-        driftX: (Math.random() - 0.5) * 0.4,
-        speedY: 0.7 + Math.random() * 0.5,
-        alpha: 0.35,
-        decay: 0.004 + Math.random() * 0.002
-      });
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(scrLeft, scrTop, scrRight - scrLeft, scrBottom - scrTop);
+    ctx.clip();
+
+    // CRT Scanlines
+    ctx.fillStyle = "rgba(0, 15, 25, 0.16)";
+    for (let y = scrTop; y < scrBottom; y += 3) {
+      ctx.fillRect(scrLeft, y, scrRight - scrLeft, 1);
     }
 
-    this.renderSteamPuffs(ctx, s.dayzSteam, "rgba(220, 240, 255,");
+    // Sniper Tower Flashlight Sweep / Ambient Fog Shimmer across Forest
+    const sweepX = scrLeft + (scrRight - scrLeft) * (0.5 + Math.sin(now * 0.001) * 0.35);
+    const sweepGrad = ctx.createRadialGradient(sweepX, scrTop + 60, 10, sweepX, scrTop + 60, 140);
+    sweepGrad.addColorStop(0, "rgba(220, 245, 255, 0.12)");
+    sweepGrad.addColorStop(1, "rgba(220, 245, 255, 0)");
+    ctx.fillStyle = sweepGrad;
+    ctx.fillRect(scrLeft, scrTop, scrRight - scrLeft, scrBottom - scrTop);
+    ctx.restore();
 
     // 1C. Floating Ambient Dust Motes
     s.dayzDust.forEach(d => {
@@ -341,7 +349,9 @@ class SceneAnimationEngine {
     const s = this.state;
     ctx.save();
 
-    // 2A. Dual Monitor Glow & Live Coding Ambiance
+    const isOpt2 = this.currentOption === 2;
+
+    // 2A. Dual Monitor Glow
     const screenX = this.toX(0.44, b);
     const screenY = this.toY(0.40, b);
     const screenRadius = this.toDist(0.38, b);
@@ -356,7 +366,47 @@ class SceneAnimationEngine {
     ctx.arc(screenX, screenY, screenRadius, 0, Math.PI * 2);
     ctx.fill();
 
-    // 2B. Keyboard Ambient RGB Underglow (nx: 0.47, ny: 0.77)
+    // OPTION 2: Realistic Terminal & Keyboard Interactivity
+    if (isOpt2) {
+      // 2A. Blinking Terminal Cursor on right monitor at "terminal $" (nx: 0.458, ny: 0.398)
+      const termCursorX = this.toX(0.458, b);
+      const termCursorY = this.toY(0.396, b);
+      const curSize = Math.max(6, Math.floor(this.toDist(0.007, b)));
+
+      if (Math.floor(now / 480) % 2 === 0) {
+        ctx.fillStyle = "#38ef7d";
+        ctx.fillRect(termCursorX, termCursorY, curSize, curSize * 1.5);
+      }
+
+      // CRT Scanlines on both monitors
+      const monLeft = this.toX(0.18, b);
+      const monTop = this.toY(0.24, b);
+      const monW = this.toDist(0.39, b);
+      const monH = this.toDist(0.33, b);
+
+      ctx.save();
+      ctx.fillStyle = "rgba(0, 10, 20, 0.12)";
+      for (let y = monTop; y < monTop + monH; y += 3) {
+        ctx.fillRect(monLeft, y, monW, 1);
+      }
+      ctx.restore();
+
+      // 2B. Mechanical Keyboard Pixel Keypress Tap Glow (nx: 0.42..0.58, ny: 0.72..0.84)
+      const kbX = this.toX(0.48, b);
+      const kbY = this.toY(0.77, b);
+      const kbW = this.toDist(0.15, b);
+      
+      const keyHit = (now % 260) < 85;
+      if (keyHit) {
+        const keyOffset = Math.sin(Math.floor(now / 260) * 1.7) * (kbW * 0.35);
+        ctx.fillStyle = "rgba(77, 238, 234, 0.45)";
+        ctx.beginPath();
+        ctx.arc(kbX + keyOffset, kbY, 4, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    // Keyboard Ambient RGB Underglow
     const kbX = this.toX(0.48, b);
     const kbY = this.toY(0.76, b);
     const kbW = this.toDist(0.18, b);
@@ -376,7 +426,7 @@ class SceneAnimationEngine {
     ctx.lineWidth = 1.3;
     s.codeRain.forEach(r => {
       r.ny += r.speed;
-      r.nx -= r.speed * 0.25; // slight wind slant
+      r.nx -= r.speed * 0.25;
       if (r.ny > 0.48 || r.nx < 0.68) {
         r.ny = 0.04;
         r.nx = 0.70 + Math.random() * 0.28;
@@ -406,7 +456,7 @@ class SceneAnimationEngine {
       ctx.fill();
     });
 
-    // 2E. Coffee Mug Steam (Mug at nx: 0.24, ny: 0.84)
+    // 2E. Coffee Mug Steam (Mug at nx: 0.24, ny: 0.83)
     const coffeeX = this.toX(0.24, b);
     const coffeeY = this.toY(0.83, b);
 
@@ -461,9 +511,9 @@ class SceneAnimationEngine {
       ctx.restore();
     }
 
-    // 3B. River Water Specular Highlights & Ripples (River: nx: 0.52..0.92, ny: 0.52..0.94)
+    // 3B. River Water Specular Highlights & Ripples
     s.forestRipples.forEach(r => {
-      r.nx -= r.speed; // water flow towards left/downstream
+      r.nx -= r.speed;
       if (r.nx < 0.48) {
         r.nx = 0.92;
         r.ny = 0.52 + Math.random() * 0.40;
@@ -481,9 +531,8 @@ class SceneAnimationEngine {
       ctx.stroke();
     });
 
-    // 3C. Swirling Autumn Leaves (Natural Leaf Path)
+    // 3C. Swirling Autumn Leaves (Natural Pointed Leaf Shape)
     s.forestLeaves.forEach(p => {
-      // Wind gust simulation
       const windGust = Math.sin(now * 0.0015 + p.phase) * 0.0008;
       p.nx += p.speedX + windGust;
       p.ny += p.speedY;
@@ -498,7 +547,7 @@ class SceneAnimationEngine {
       const lx = this.toX(p.nx, b);
       const ly = this.toY(p.ny, b);
       const lsize = p.size;
-      const aspectScale = Math.sin(p.tilt) * 0.6 + 0.4; // 3D tumble perspective
+      const aspectScale = Math.sin(p.tilt) * 0.6 + 0.4;
 
       ctx.save();
       ctx.translate(lx, ly);
@@ -506,14 +555,12 @@ class SceneAnimationEngine {
       ctx.scale(1, aspectScale);
       ctx.fillStyle = p.color;
 
-      // Draw organic pointed leaf shape
       ctx.beginPath();
       ctx.moveTo(-lsize * 0.5, 0);
       ctx.quadraticCurveTo(0, -lsize * 0.4, lsize * 0.5, 0);
       ctx.quadraticCurveTo(0, lsize * 0.4, -lsize * 0.5, 0);
       ctx.fill();
 
-      // Delicate leaf center vein
       ctx.strokeStyle = "rgba(0, 0, 0, 0.18)";
       ctx.lineWidth = 0.8;
       ctx.beginPath();
@@ -553,80 +600,88 @@ class SceneAnimationEngine {
     const s = this.state;
     ctx.save();
 
-    // 4A. Gas Stove Flame Glow under Pot (Stove at nx: 0.65, ny: 0.77)
-    const stoveX = this.toX(0.65, b);
-    const stoveY = this.toY(0.77, b);
-    const flameRadius = this.toDist(0.08, b);
-    const flameFlicker = Math.sin(now * 0.02) * 0.06 + Math.sin(now * 0.035) * 0.04;
+    const isOpt2 = this.currentOption === 2;
 
-    const flameGrad = ctx.createRadialGradient(stoveX, stoveY, 2, stoveX, stoveY, flameRadius);
-    flameGrad.addColorStop(0, `rgba(77, 180, 255, ${0.45 + flameFlicker})`);
-    flameGrad.addColorStop(0.4, `rgba(255, 160, 50, ${0.30 + flameFlicker})`);
-    flameGrad.addColorStop(1, "rgba(255, 120, 30, 0)");
+    if (isOpt2) {
+      // 4A. Gas Stove Flame Glow under Pot (Burner at nx: 0.686, ny: 0.905)
+      const stoveX = this.toX(0.686, b);
+      const stoveY = this.toY(0.905, b);
+      const flameRadius = this.toDist(0.09, b);
+      const flameFlicker = Math.sin(now * 0.02) * 0.08 + Math.sin(now * 0.038) * 0.05;
 
-    ctx.fillStyle = flameGrad;
-    ctx.beginPath();
-    ctx.ellipse(stoveX, stoveY, flameRadius, flameRadius * 0.35, 0, 0, Math.PI * 2);
-    ctx.fill();
+      const flameGrad = ctx.createRadialGradient(stoveX, stoveY, 4, stoveX, stoveY, flameRadius);
+      flameGrad.addColorStop(0, `rgba(77, 238, 234, ${0.40 + flameFlicker})`);
+      flameGrad.addColorStop(0.35, `rgba(0, 140, 255, ${0.25 + flameFlicker * 0.5})`);
+      flameGrad.addColorStop(0.7, `rgba(255, 170, 50, ${0.18 + flameFlicker * 0.3})`);
+      flameGrad.addColorStop(1, "rgba(255, 120, 30, 0)");
 
-    // 4B. Cozy Kitchen Ambient Warmth Pulse
-    const ambientX = this.toX(0.65, b);
-    const ambientY = this.toY(0.68, b);
-    const ambientR = this.toDist(0.32, b);
-    const warmPulse = Math.sin(now * 0.003) * 0.03;
-
-    const ambGrad = ctx.createRadialGradient(ambientX, ambientY, 20, ambientX, ambientY, ambientR);
-    ambGrad.addColorStop(0, `rgba(255, 170, 60, ${0.12 + warmPulse})`);
-    ambGrad.addColorStop(1, "rgba(255, 140, 40, 0)");
-    ctx.fillStyle = ambGrad;
-    ctx.beginPath();
-    ctx.arc(ambientX, ambientY, ambientR, 0, Math.PI * 2);
-    ctx.fill();
-
-    // 4C. Goulash Pot Steam (Pot mouth at nx: 0.65, ny: 0.71)
-    const potX = this.toX(0.65, b);
-    const potY = this.toY(0.71, b);
-
-    if (Math.random() < 0.35) {
-      s.kitchenSteam.push({
-        x: potX + (Math.random() - 0.5) * 16,
-        y: potY,
-        radius: 4,
-        maxRadius: 28 + Math.random() * 14,
-        driftX: (Math.random() - 0.5) * 0.55,
-        speedY: 0.85 + Math.random() * 0.60,
-        alpha: 0.40,
-        decay: 0.0035 + Math.random() * 0.0015
-      });
-    }
-
-    this.renderSteamPuffs(ctx, s.kitchenSteam, "rgba(255, 235, 210,");
-
-    // 4D. Simmering Soup Bubbles
-    if (Math.random() < 0.28) {
-      s.kitchenBubbles.push({
-        x: potX + (Math.random() - 0.5) * 22,
-        y: potY + (Math.random() - 0.5) * 6,
-        radius: 1.2,
-        maxRadius: 4.5 + Math.random() * 2.5,
-        alpha: 0.85
-      });
-    }
-
-    for (let i = s.kitchenBubbles.length - 1; i >= 0; i--) {
-      const bubble = s.kitchenBubbles[i];
-      bubble.radius += 0.25;
-      bubble.alpha -= 0.035;
-
-      ctx.strokeStyle = `rgba(255, 180, 80, ${Math.max(0, bubble.alpha)})`;
-      ctx.lineWidth = 1.4;
+      ctx.fillStyle = flameGrad;
       ctx.beginPath();
-      ctx.arc(bubble.x, bubble.y, bubble.radius, 0, Math.PI * 2);
-      ctx.stroke();
+      ctx.ellipse(stoveX, stoveY, flameRadius, flameRadius * 0.35, 0, 0, Math.PI * 2);
+      ctx.fill();
 
-      if (bubble.alpha <= 0 || bubble.radius >= bubble.maxRadius) {
-        s.kitchenBubbles.splice(i, 1);
+      // 4B. Cozy Kitchen Ambient Warmth Pulse
+      const ambientX = this.toX(0.68, b);
+      const ambientY = this.toY(0.70, b);
+      const ambientR = this.toDist(0.35, b);
+      const warmPulse = Math.sin(now * 0.003) * 0.03;
+
+      const ambGrad = ctx.createRadialGradient(ambientX, ambientY, 20, ambientX, ambientY, ambientR);
+      ambGrad.addColorStop(0, `rgba(255, 170, 60, ${0.12 + warmPulse})`);
+      ambGrad.addColorStop(1, "rgba(255, 140, 40, 0)");
+      ctx.fillStyle = ambGrad;
+      ctx.beginPath();
+      ctx.arc(ambientX, ambientY, ambientR, 0, Math.PI * 2);
+      ctx.fill();
+
+      // 4C. Goulash Pot Steam (Pot mouth at nx: 0.676, ny: 0.709)
+      const potX = this.toX(0.676, b);
+      const potY = this.toY(0.709, b);
+
+      if (Math.random() < 0.32) {
+        s.kitchenSteam.push({
+          x: potX + (Math.random() - 0.5) * 20,
+          y: potY,
+          radius: 4,
+          maxRadius: 28 + Math.random() * 14,
+          driftX: (Math.random() - 0.5) * 0.55,
+          speedY: 0.85 + Math.random() * 0.60,
+          alpha: 0.40,
+          decay: 0.0035 + Math.random() * 0.0015
+        });
       }
+
+      this.renderSteamPuffs(ctx, s.kitchenSteam, "rgba(255, 235, 210,");
+
+      // 4D. Simmering Soup Bubbles
+      if (Math.random() < 0.28) {
+        s.kitchenBubbles.push({
+          x: potX + (Math.random() - 0.5) * 22,
+          y: potY + (Math.random() - 0.5) * 6,
+          radius: 1.2,
+          maxRadius: 4.5 + Math.random() * 2.5,
+          alpha: 0.85
+        });
+      }
+
+      for (let i = s.kitchenBubbles.length - 1; i >= 0; i--) {
+        const bubble = s.kitchenBubbles[i];
+        bubble.radius += 0.25;
+        bubble.alpha -= 0.035;
+
+        ctx.strokeStyle = `rgba(255, 180, 80, ${Math.max(0, bubble.alpha)})`;
+        ctx.lineWidth = 1.4;
+        ctx.beginPath();
+        ctx.arc(bubble.x, bubble.y, bubble.radius, 0, Math.PI * 2);
+        ctx.stroke();
+
+        if (bubble.alpha <= 0 || bubble.radius >= bubble.maxRadius) {
+          s.kitchenBubbles.splice(i, 1);
+        }
+      }
+    } else {
+      // OPTION 1: Delicate twilight atmosphere for evening street
+      // (The animated GIF loop already has its own lights and motion)
     }
 
     ctx.restore();

@@ -4,14 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Gere szabadságon | Cozy Lo-Fi Chill World</title>
-  <meta name="description" content="Gere szabadságon - animált lo-fi pixel art világ. DayZ, kódolás határidők nélkül, folyóparti séta, panel konyha és békés alvás lo-fi zenével.">
+  <meta name="description" content="Gere szabadságon - animált lo-fi pixel art világ. Retro gamer szoba, éjszakai kódolás esőben és hacker eszközökkel, napsütötte természet és esti utca lo-fi zenével.">
   
   <!-- Google Fonts for Retro Pixel & Modern Typography -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
   
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css?v=20261014_4">
   <link rel="icon" type="image/jpeg" href="assets/images/avatar_gere.jpg">
 </head>
 <body>
@@ -20,10 +20,15 @@
     
     <!-- Clean Minimal Header with Minimal Mute Button -->
     <header class="header-bar" id="headerBar">
-      <h1 class="main-title" id="mainTitle">Gere szabadságon</h1>
-      <button class="mute-btn-minimal" id="muteBtn" title="Némítás / Visszahangosítás (M)" aria-label="Némítás">
-        <span id="muteIcon">🔊</span>
-      </button>
+      <div class="header-left">
+        <h1 class="main-title" id="mainTitle">Gere szabadságon</h1>
+      </div>
+
+      <div class="header-right">
+        <button class="mute-btn-minimal" id="muteBtn" title="Némítás / Visszahangosítás (M)" aria-label="Némítás">
+          <span id="muteIcon">🔊</span>
+        </button>
+      </div>
     </header>
 
     <!-- Main Scene Theater Stage -->
@@ -32,38 +37,34 @@
       <!-- Stage Viewport -->
       <div class="stage-viewport" id="stageViewport">
         
-        <!-- Scene 1: DayZ Survival Gaming -->
+        <!-- Scene 1: Gamer Szoba Monster Energy dobozokkal -->
         <section class="scene-card active" id="scene-gaming" data-scene-id="gaming">
           <div class="scene-image-container">
-            <img src="assets/images/scene_gaming_dayz.jpg" alt="Gere DayZ survival játékkal játszik" class="scene-img">
-            <canvas class="scene-fx-canvas" id="canvas-gaming"></canvas>
+            <img src="assets/loops/loop_gaming.gif" alt="Animált lo-fi gamer szoba Monster Energy dobozokkal" class="scene-img" loading="eager">
             <div class="scene-light-glow glow-cyan-purple"></div>
           </div>
         </section>
 
-        <!-- Scene 2: Dedicated Coding Scene -->
+        <!-- Scene 2: Esős Kódolás Hacker Eszközökkel és Monsterrel -->
         <section class="scene-card" id="scene-coding" data-scene-id="coding">
           <div class="scene-image-container">
-            <img src="assets/images/scene_coding.jpg" alt="Gere éjszaka kódol két monitor előtt" class="scene-img">
-            <canvas class="scene-fx-canvas" id="canvas-coding"></canvas>
+            <img src="assets/loops/loop_coding.gif" alt="Animált lo-fi kódolás esővel, Flipper Zeroval, SDR antennával és Monsterrel" class="scene-img" loading="eager">
             <div class="scene-light-glow glow-cyan-purple"></div>
           </div>
         </section>
 
-        <!-- Scene 3: Walking in Riverside Forest -->
+        <!-- Scene 3: Napsütötte Erdei Séta a Folyóparton -->
         <section class="scene-card" id="scene-walking" data-scene-id="walking">
           <div class="scene-image-container">
-            <img src="assets/images/scene_forest_walk.jpg" alt="Gere sétál a folyóparti erdőben" class="scene-img">
-            <canvas class="scene-fx-canvas" id="canvas-walking"></canvas>
+            <img src="assets/loops/loop_forest_walk.gif" alt="Animált erdei séta folyóparton Gere-rel, hullámzó vízzel és őszi falevelekkel" class="scene-img" loading="eager">
             <div class="scene-light-glow glow-sunset"></div>
           </div>
         </section>
 
-        <!-- Scene 4: Cooking in Small Panel Apartment Kitchen -->
+        <!-- Scene 4: Meghitt Panelkonyha Főzés -->
         <section class="scene-card" id="scene-cooking" data-scene-id="cooking">
           <div class="scene-image-container">
-            <img src="assets/images/scene_panel_kitchen.jpg" alt="Gere főz a panel konyhában" class="scene-img">
-            <canvas class="scene-fx-canvas" id="canvas-cooking"></canvas>
+            <img src="assets/loops/loop_panel_kitchen.gif" alt="Animált panelkonyha főzés Gere-rel, gázlánggal, gőzzel és csillagos ablakkal" class="scene-img" loading="eager">
             <div class="scene-light-glow glow-warm-kitchen"></div>
           </div>
         </section>
@@ -74,17 +75,24 @@
       <button class="nav-arrow nav-prev" id="prevSceneBtn" title="Előző jelenet (Balra nyíl)">❮</button>
       <button class="nav-arrow nav-next" id="nextSceneBtn" title="Következő jelenet (Jobbra nyíl)">❯</button>
 
-      <!-- Mobile Swipe Instruction Hint -->
-      <div class="swipe-hint" id="swipeHint">
-        <span>👈 Húzd balra/jobbra a lapozáshoz 👉</span>
+      <!-- Audio Autoplay Fallback Prompt (Cozy Pill) -->
+      <div class="audio-start-prompt hidden" id="audioStartPrompt" role="button" tabindex="0" title="Kattints a zene elindításához">
+        <span class="audio-prompt-icon">🎧</span>
+        <span class="audio-prompt-text">Kattints bárhová a lo-fi zenéhez</span>
+        <span class="audio-prompt-sub">🎵</span>
       </div>
     </main>
+
+    <!-- Mobile Device Rotation Hint (Visible only on mobile portrait) -->
+    <div class="rotate-hint" id="rotateHint">
+      <span class="rotate-hint-icon">🔄</span>
+      <span class="rotate-hint-text">A teljes mozis élményhez fordítsd el a telefont!</span>
+    </div>
 
   </div>
 
   <!-- Audio and Interactive Scripts -->
-  <script src="js/audio-engine.js"></script>
-  <script src="js/particles.js"></script>
-  <script src="js/app.js"></script>
+  <script src="js/audio-engine.js?v=20261014_3"></script>
+  <script src="js/app.js?v=20261014_3"></script>
 </body>
 </html>

@@ -261,16 +261,28 @@ class LoFiAudioEngine {
   // ==========================================
   // PUBLIC CONTROLS
   // ==========================================
-  start() {
+  async start() {
     this.initContext();
     if (this.ctx && this.ctx.state === "suspended") {
-      this.ctx.resume().catch(() => {});
+      try {
+        await this.ctx.resume();
+      } catch (err) {
+        // Autoplay blocked by browser policy until user gesture
+        return false;
+      }
     }
-    if (!this.isPlaying) {
-      this.isPlaying = true;
-      this.scheduleBeat();
+    if (this.ctx && this.ctx.state === "running") {
+      if (!this.isPlaying) {
+        this.isPlaying = true;
+        this.scheduleBeat();
+      }
+      return true;
     }
-    return this.isPlaying;
+    return false;
+  }
+
+  isAudioRunning() {
+    return !!(this.ctx && this.ctx.state === "running" && this.isPlaying);
   }
 
   stop() {

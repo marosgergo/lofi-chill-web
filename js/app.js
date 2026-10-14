@@ -1,6 +1,6 @@
 /**
  * GERE SZABADSÁGON - Main UI & Scene Controller
- * - 4 Scenes: DayZ Survival, Coding, Riverside Forest Walk, Panel Kitchen.
+ * - 4 Animated Scenes: Gamer Szoba (Monster), Kódolás (Hacker tools + Monster), Természet, Esti Utca.
  * - Arrow buttons, keyboard navigation (1-4, Left/Right), and mobile touch swipe.
  * - Automatic startup background lo-fi music with a clean minimal Mute button.
  */
@@ -32,7 +32,6 @@ document.addEventListener("DOMContentLoaded", () => {
       card.classList.toggle("active", card.dataset.sceneId === activeId);
     });
 
-    // Notify Canvas FX Engine
     if (window.sceneFX) {
       window.sceneFX.setActiveScene(activeId);
     }
@@ -117,22 +116,50 @@ document.addEventListener("DOMContentLoaded", () => {
     muteBtn.addEventListener("click", handleToggleMute);
   }
 
-  // ==========================================================
-  // RELIABLE STARTUP AUTOPLAY
-  // ==========================================================
-  function startAudio() {
-    if (!window.lofiAudio) return;
-    window.lofiAudio.start();
-    updateMuteUI(window.lofiAudio.isMuted);
+  const audioPrompt = document.getElementById("audioStartPrompt");
+
+  function hideAudioPrompt() {
+    if (!audioPrompt) return;
+    audioPrompt.classList.add("hidden");
+    setTimeout(() => {
+      audioPrompt.style.display = "none";
+    }, 450);
   }
 
-  // 1. Try immediate autoplay on page load
-  startAudio();
+  function showAudioPrompt() {
+    if (!audioPrompt) return;
+    audioPrompt.style.display = "flex";
+    requestAnimationFrame(() => {
+      audioPrompt.classList.remove("hidden");
+    });
+  }
 
-  // 2. Browser autoplay fallback: resume seamlessly on first user interaction
-  const resumeOnFirstGesture = () => {
+  // ==========================================================
+  // RELIABLE STARTUP AUTOPLAY & BROWSER POLICY HANDLING
+  // ==========================================================
+  async function initAudioPlayback() {
+    if (!window.lofiAudio) return;
+    const isPlaying = await window.lofiAudio.start();
+
+    if (isPlaying && window.lofiAudio.isAudioRunning()) {
+      hideAudioPrompt();
+      updateMuteUI(false);
+    } else {
+      // Browser autoplay policy blocked sound on cold start:
+      // Show cozy prompt & set muted icon until user touches the screen
+      showAudioPrompt();
+      updateMuteUI(true);
+    }
+  }
+
+  // Resume immediately on user interaction
+  const resumeOnFirstGesture = async () => {
     if (window.lofiAudio) {
-      window.lofiAudio.start();
+      const isPlaying = await window.lofiAudio.start();
+      if (isPlaying && window.lofiAudio.isAudioRunning()) {
+        hideAudioPrompt();
+        updateMuteUI(false);
+      }
     }
     window.removeEventListener("click", resumeOnFirstGesture);
     window.removeEventListener("keydown", resumeOnFirstGesture);
@@ -140,8 +167,15 @@ document.addEventListener("DOMContentLoaded", () => {
     window.removeEventListener("pointerdown", resumeOnFirstGesture);
   };
 
-  window.addEventListener("click", resumeOnFirstGesture, { once: true });
-  window.addEventListener("keydown", resumeOnFirstGesture, { once: true });
-  window.addEventListener("touchstart", resumeOnFirstGesture, { once: true });
-  window.addEventListener("pointerdown", resumeOnFirstGesture, { once: true });
+  if (audioPrompt) {
+    audioPrompt.addEventListener("click", resumeOnFirstGesture);
+  }
+
+  window.addEventListener("click", resumeOnFirstGesture);
+  window.addEventListener("keydown", resumeOnFirstGesture);
+  window.addEventListener("touchstart", resumeOnFirstGesture, { passive: true });
+  window.addEventListener("pointerdown", resumeOnFirstGesture);
+
+  // Attempt initial autoplay
+  initAudioPlayback();
 });
