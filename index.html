@@ -2,30 +2,40 @@
 <html lang="hu">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Gere szabadságon | Cozy Lo-Fi Chill World</title>
   <meta name="description" content="Gere szabadságon - animált lo-fi pixel art világ. Retro gamer szoba, éjszakai kódolás esőben és hacker eszközökkel, napsütötte természet és esti utca lo-fi zenével.">
   
+  <!-- Mobile Fullscreen & PWA Meta Tags -->
+  <meta name="theme-color" content="#0e0e17">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="manifest.json">
+
   <!-- Google Fonts for Retro Pixel & Modern Typography -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
   
-  <link rel="stylesheet" href="css/style.css?v=20261014_4">
+  <link rel="stylesheet" href="css/style.css?v=20261014_5">
   <link rel="icon" type="image/jpeg" href="assets/images/avatar_gere.jpg">
 </head>
 <body>
   <!-- Main App Shell -->
   <div class="app-container" id="appContainer">
     
-    <!-- Clean Minimal Header with Minimal Mute Button -->
+    <!-- Clean Minimal Header with Fullscreen & Mute Buttons -->
     <header class="header-bar" id="headerBar">
       <div class="header-left">
         <h1 class="main-title" id="mainTitle">Gere szabadságon</h1>
       </div>
 
       <div class="header-right">
-        <button class="mute-btn-minimal" id="muteBtn" title="Némítás / Visszahangosítás (M)" aria-label="Némítás">
+        <button class="control-btn-minimal" id="fullscreenBtn" title="Teljes képernyő (F)" aria-label="Teljes képernyő">
+          <span id="fullscreenIcon">⛶</span>
+        </button>
+        <button class="control-btn-minimal mute-btn-minimal" id="muteBtn" title="Némítás / Visszahangosítás (M)" aria-label="Némítás">
           <span id="muteIcon">🔊</span>
         </button>
       </div>

@@ -16,6 +16,61 @@ document.addEventListener("DOMContentLoaded", () => {
   const stageViewport = document.getElementById("stageViewport");
   const muteBtn = document.getElementById("muteBtn");
   const muteIcon = document.getElementById("muteIcon");
+  const fullscreenBtn = document.getElementById("fullscreenBtn");
+  const fullscreenIcon = document.getElementById("fullscreenIcon");
+  const rotateHint = document.getElementById("rotateHint");
+
+  // ==========================================================
+  // FULLSCREEN API (Android Chrome & Desktop)
+  // ==========================================================
+  function isFullscreen() {
+    return !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
+  }
+
+  function toggleFullscreen() {
+    if (!isFullscreen()) {
+      const elem = document.documentElement;
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen().catch(() => {});
+      } else if (elem.webkitRequestFullscreen) {
+        elem.webkitRequestFullscreen();
+      } else if (elem.msRequestFullscreen) {
+        elem.msRequestFullscreen();
+      }
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+      } else if (document.msExitFullscreen) {
+        document.msExitFullscreen();
+      }
+    }
+  }
+
+  function updateFullscreenUI() {
+    if (!fullscreenBtn || !fullscreenIcon) return;
+    if (isFullscreen()) {
+      fullscreenIcon.textContent = "🗗";
+      fullscreenBtn.classList.add("active");
+      fullscreenBtn.title = "Kilépés a teljes képernyőből (F)";
+    } else {
+      fullscreenIcon.textContent = "⛶";
+      fullscreenBtn.classList.remove("active");
+      fullscreenBtn.title = "Teljes képernyő (F)";
+    }
+  }
+
+  if (fullscreenBtn) {
+    fullscreenBtn.addEventListener("click", toggleFullscreen);
+  }
+
+  if (rotateHint) {
+    rotateHint.addEventListener("click", toggleFullscreen);
+  }
+
+  document.addEventListener("fullscreenchange", updateFullscreenUI);
+  document.addEventListener("webkitfullscreenchange", updateFullscreenUI);
 
   // ==========================================================
   // SCENE SWITCHING
@@ -41,6 +96,11 @@ document.addEventListener("DOMContentLoaded", () => {
   if (prevBtn) prevBtn.addEventListener("click", () => switchScene(currentSceneIndex - 1));
   if (nextBtn) nextBtn.addEventListener("click", () => switchScene(currentSceneIndex + 1));
 
+  // Double click / double tap on stage toggles fullscreen
+  if (stageViewport) {
+    stageViewport.addEventListener("dblclick", toggleFullscreen);
+  }
+
   // Keyboard navigation
   window.addEventListener("keydown", (e) => {
     if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
@@ -54,6 +114,9 @@ document.addEventListener("DOMContentLoaded", () => {
     } else if (e.key === "m" || e.key === "M" || e.code === "Space") {
       e.preventDefault();
       handleToggleMute();
+    } else if (e.key === "f" || e.key === "F") {
+      e.preventDefault();
+      toggleFullscreen();
     }
   });
 
